@@ -62,7 +62,7 @@ def file_to_hash(filename):
     md5 = hashlib.md5()
     with open(filename, 'rb') as fp:
         # Use multiples of 128 bytes for best results with MD5
-        for portion in iter(ft.partial(fp.read, 8192), ''):
+        for portion in iter(ft.partial(fp.read, 16777216), ''):
             md5.update(portion)
     return md5.digest()
 
@@ -71,7 +71,7 @@ PICTURE_FILE_EXTENSIONS = [".jpg", ".jpeg", ".tif", ".tiff", ".cr2"]
 # First element of the pair refers to the metadata file for a given movie file
 # while the second element is the actual movie file
 MOVIE_FILE_EXTENSIONS = [(".thm", ".mov")]
-MOVIE_DATA_EXTENSIONS = [x for (x, y) in MOVIE_FILE_EXTENSIONS]
+MOVIE_DATA_EXTENSIONS = [y for (x, y) in MOVIE_FILE_EXTENSIONS]
 
 if __name__ == "__main__":
     # Setting up the argument parser
