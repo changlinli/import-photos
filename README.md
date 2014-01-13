@@ -15,6 +15,8 @@ Installing
 ----------
 
 Simply run (preferably within a virtualenv) `pip install -r requirements.txt`.
+Note that unfortunately due to the dependency on `exifread`, this is a Python 2
+script. Ideally I'll move to Python 3 soon to keep up with the future!
 
 Testing
 -------
