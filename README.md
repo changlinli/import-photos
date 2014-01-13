@@ -1,3 +1,14 @@
+import_photos.py
+================
+
+A short little script to import photos into folders by date based on EXIF data.
+This was originally inspired by the way that Shotwell imports photos. However,
+because I do very little editing in Shotwell (instead relying on Darktable and
+GIMP), it made very little sense for me to go through the huge overhead of
+Shotwell's importing process when I really just wanted the files copied from one
+place to another and organized intelligently into folders. Hence I wrote this
+short script.
+
 Testing
 -------
 
