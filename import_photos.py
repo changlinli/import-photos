@@ -86,12 +86,34 @@ def side_effects_copy_file_with_flags(source,
 
     before_copy_hash = None
     try:
+        skip_message = ("It looks like {0} already exists; skipping it... ".
+                        format(destination))
         if fast_skip_flag and os.path.isfile(destination):
-            print("It looks like the file already exists; skipping it... ")
+            if verbose_flag:
+                print(skip_message)
+            if logging_flag:
+                log_file_fp.write(skip_message + "\n")
+            if delete_on_copy_flag:
+                delete_string = "Deleting {0}".format(source)
+                if verbose_flag:
+                    print(delete_string)
+                if logging_flag:
+                    log_file_fp.write(delete_string + "\n")
+                os.remove(source)
             return
         elif (file_to_hash(destination) == file_to_hash(source) and 
               not fast_skip_flag):
-            print("It looks like the file already exists; skipping it... ")
+            if verbose_flag:
+                print(skip_message)
+            if logging_flag:
+                log_file_fp.write(skip_message + "\n")
+            if delete_on_copy_flag:
+                delete_string = "Deleting {0}".format(source)
+                if verbose_flag:
+                    print(delete_string)
+                if logging_flag:
+                    log_file_fp.write(delete_string + "\n")
+                os.remove(source)
             return
     except IOError:
         before_copy_hash = file_to_hash(source)
@@ -107,6 +129,11 @@ def side_effects_copy_file_with_flags(source,
     if before_copy_hash == after_copy_hash:
         hash_string = "Hashes match!"
         if delete_on_copy_flag:
+            delete_string = "Deleting {0}".format(source)
+            if verbose_flag:
+                print(delete_string)
+            if logging_flag:
+                log_file_fp.write(delete_string + "\n")
             os.remove(source)
     else:
         hash_string = ("Warning: {0}'s and {1}'s hashes do not"
@@ -151,7 +178,9 @@ if __name__ == "__main__":
                                  help="Delete a file after it has been"
                                  " successfully copied. Note deletion will"
                                  " not occur if the hashes of the copied file"
-                                 " and the source file do not match.")
+                                 " and the source file do not match. Therefore"
+                                 " this option is not compatible with"
+                                 " --fast-skip")
 
     argument_parser.add_argument("-p", "--process-log-deletes",
                                  action="store_true",
