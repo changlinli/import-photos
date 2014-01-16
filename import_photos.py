@@ -8,7 +8,7 @@ import datetime
 import sys
 import functools as ft
 
-DEFAULT_STORAGE_DIRECTORY = "/home/user/Pictures"
+DEFAULT_STORAGE_DIRECTORY = os.environ["HOME"]
 
 def split_components(pathname):
     """
@@ -73,18 +73,29 @@ def side_effects_copy_file_with_flags(source,
                                       log_file=None,
                                       log_deletes_flag=False,
                                       log_deletes_file=None,
-                                      delete_on_copy_flag=False):
+                                      delete_on_copy_flag=False,
+                                      fast_skip_flag=False):
 
     if logging_flag:
-        log_file_fp = open(log_file, "w")
+        log_file_fp = open(log_file, "a")
         log_file_fp.write(str(datetime.datetime.now()) + "\n")
 
     beginning_string = "Copying {0} to {1}... ".format(source, destination)
     if verbose_flag:
         print(beginning_string, end="")
 
-    before_copy_hash = file_to_hash(source)
-    shutil.copyfile(source, destination)
+    before_copy_hash = None
+    try:
+        if fast_skip_flag and os.path.isfile(destination):
+            print("It looks like the file already exists; skipping it... ")
+            return
+        elif (file_to_hash(destination) == file_to_hash(source) and 
+              not fast_skip_flag):
+            print("It looks like the file already exists; skipping it... ")
+            return
+    except IOError:
+        before_copy_hash = file_to_hash(source)
+        shutil.copyfile(source, destination)
 
     ending_string = "Done!"
     if verbose_flag:
@@ -149,6 +160,12 @@ if __name__ == "__main__":
                                  " through and delete all the files contained in"
                                  " this log.")
 
+    argument_parser.add_argument("-f", "--fast-skip", action="store_true",
+                                 help="Skip any files that already exist in the"
+                                 " destination without checking whether the"
+                                 " hash of the destination file and the source"
+                                 " file match.")
+
     args = argument_parser.parse_args()
     source = args.source
     destination = args.destination
@@ -159,6 +176,7 @@ if __name__ == "__main__":
     delete_on_copy = args.delete_on_copy
     LOG_NAME = "import_pics.log"
     log_file = os.path.join(destination, LOG_NAME)
+    fast_skip = args.fast_skip
 
     # Performing preliminary checks and preparation
     if not os.path.isdir(destination):
@@ -184,7 +202,8 @@ if __name__ == "__main__":
                                                   verbose_flag=verbose,
                                                   logging_flag=logging,
                                                   log_file=log_file,
-                                                  delete_on_copy_flag=delete_on_copy)
+                                                  delete_on_copy_flag=delete_on_copy,
+                                                  fast_skip_flag=fast_skip)
 
             elif extension.lower() in MOVIE_DATA_EXTENSIONS:
                 filename = os.path.join(root, name)
@@ -194,8 +213,8 @@ if __name__ == "__main__":
                 year = datetime.datetime.fromtimestamp(ctime).year
                 month = datetime.datetime.fromtimestamp(ctime).month
                 day = datetime.datetime.fromtimestamp(ctime).day
-                date = [year, month, day]
-                generate_dirs_from_components(date, destination)
+                date = [str(year), str(month), str(day)]
+                generate_dirs_from_components(date[:], destination)
                 destination_file = os.path.join(*([destination] + 
                                                   date + 
                                                   [name]))
@@ -204,6 +223,7 @@ if __name__ == "__main__":
                                                   verbose_flag=verbose,
                                                   logging_flag=logging,
                                                   log_file=log_file,
-                                                  delete_on_copy_flag=delete_on_copy)
+                                                  delete_on_copy_flag=delete_on_copy,
+                                                  fast_skip_flag=fast_skip)
             else:
                 pass
