@@ -9,6 +9,10 @@ the huge overhead of Shotwell's importing process when I really just wanted the
 files copied from one place to another and organized intelligently into folders.
 Hence I wrote this short script.
 
+This script hashes both files to ensure that copying went well and also can
+delete photos that have already been imported and has a list of other options as
+well.
+
 To use, simply run `python import_photos.py -h` and a description will appear.
 
 Installing
