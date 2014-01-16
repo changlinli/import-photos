@@ -66,6 +66,40 @@ def file_to_hash(filename):
             md5.update(portion)
     return md5.digest()
 
+def side_effects_copy_file_with_flags(source,
+                                      destination,
+                                      verbose_flag=False,
+                                      logging_flag=False,
+                                      log_file=None,
+                                      log_deletes_flag=False,
+                                      log_deletes_file=None,
+                                      delete_on_copy_flag=False):
+
+    beginning_string = "Copying {0} to {1}... ".format(source, destination)
+    if verbose_flag:
+        print(beginning_string, end="")
+
+    before_copy_hash = file_to_hash(source)
+    shutil.copyfile(source, destination)
+
+    ending_string = "Done!"
+    if verbose_flag:
+        print(ending_string)
+    if logging_flag:
+        log_file.write(beginning_string + ending_string + "\n")
+
+    after_copy_hash = file_to_hash(destination)
+    if before_copy_hash == after_copy_hash:
+        hash_string = "Hashes match!"
+        if delete_on_copy_flag:
+            os.remove(source)
+    else:
+        hash_string = ("Warning: {0}'s and {1}'s hashes do not"
+        "match!".format(source, destination))
+        print(hash_string)
+    if logging_flag:
+        log_file.write(hash_string + "\n")
+
 
 PICTURE_FILE_EXTENSIONS = [".jpg", ".jpeg", ".tif", ".tiff", ".cr2"]
 # First element of the pair refers to the metadata file for a given movie file
@@ -77,20 +111,47 @@ if __name__ == "__main__":
     # Setting up the argument parser
     argument_description="Import photos from camera to folders"
     argument_parser = argparse.ArgumentParser(description=argument_description)
+
     argument_parser.add_argument("-v", "--verbose", action="store_true",
                                  help="Turn on verbose printing")
+
     argument_parser.add_argument("-l", "--log", action="store_true",
                                  help="Turn on logging (log file will be in"
                                  " destination directory)")
+
     argument_parser.add_argument("source", metavar="S", type=str,
                                  help="Source from which to import photos")
+
     argument_parser.add_argument("destination", metavar="D", type=str,
                                  help="Destination to place imported photos")
+
+    argument_parser.add_argument("-e", "--log-deletes", action="store_true",
+                                 help="Create a text file which stores all the"
+                                 " files that have been copied and can be"
+                                 " deleted later, by running this script with"
+                                 " the -p or --process-log-deletes flag.")
+
+    argument_parser.add_argument("-d", "--delete-on-copy", action="store_true",
+                                 help="Delete a file after it has been"
+                                 " successfully copied. Note deletion will"
+                                 " not occur if the hashes of the copied file"
+                                 " and the source file do not match.")
+
+    argument_parser.add_argument("-p", "--process-log-deletes",
+                                 action="store_true",
+                                 help="Process the log of files scheduled to be"
+                                 " deleted created by -e or --log-deletes and go"
+                                 " through and delete all the files contained in"
+                                 " this log.")
+
     args = argument_parser.parse_args()
     source = args.source
     destination = args.destination
     verbose = args.verbose
     logging = args.log
+    log_deletes = args.log_deletes
+    process_log_deletes = args.process_log_deletes
+    delete_on_copy = args.delete_on_copy
     LOG_NAME = "import_pics.log"
 
     # Performing preliminary checks and preparation
@@ -115,28 +176,12 @@ if __name__ == "__main__":
                 destination_file = os.path.join(*([destination] + 
                                                   date +
                                                   [name]))
-                beginning_string = "Copying {0} to {1}... ".format(filename, destination_file)
-                if verbose:
-                    print(beginning_string, end="")
-
-                before_copy_hash = file_to_hash(filename)
-                shutil.copyfile(filename, destination_file)
-
-                ending_string = "Done!"
-                if verbose:
-                    print(ending_string)
-                if logging:
-                    log_file.write(beginning_string + ending_string + "\n")
-
-                after_copy_hash = file_to_hash(destination_file)
-                if before_copy_hash == after_copy_hash:
-                    hash_string = "Hashes match!"
-                else:
-                    hash_string = ("Warning: {0}'s and {1}'s hashes do not"
-                    "match!".format(filename, destination_file))
-                    print(hash_string)
-                if logging:
-                    log_file.write(hash_string + "\n")
+                side_effects_copy_file_with_flags(source=filename,
+                                                  destination=destination_file,
+                                                  verbose_flag=verbose,
+                                                  logging_flag=logging,
+                                                  log_file=log_file,
+                                                  delete_on_copy_flag=delete_on_copy)
 
             elif extension.lower() in MOVIE_DATA_EXTENSIONS:
                 print("Video here! (I'll add more functionality for this later!)")
