@@ -24,6 +24,13 @@ class TestCopyPictures(unittest.TestCase):
                                                         self.destination)
         isfile_flag = os.path.isfile(self.destination)
         self.assertTrue(isfile_flag)
+    def test_copy_if_file_already_exists(self):
+        shutil.copyfile(SAMPLE_PHOTO_LOCATION, self.destination)
+        modified_time_before = os.path.getmtime(self.destination)
+        import_photos.side_effects_copy_file_with_flags(SAMPLE_PHOTO_LOCATION,
+                                                        self.destination)
+        modified_time_after = os.path.getmtime(self.destination)
+        self.assertEqual(modified_time_before, modified_time_after)
     def tearDown(self):
         try:
             os.remove(self.destination)
