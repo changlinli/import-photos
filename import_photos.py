@@ -82,7 +82,7 @@ def side_effects_copy_file_with_flags(source,
 
     beginning_string = "Copying {0} to {1}... ".format(source, destination)
     if verbose_flag:
-        print(beginning_string, end="")
+        print(beginning_string)
 
     before_copy_hash = None
     try:
