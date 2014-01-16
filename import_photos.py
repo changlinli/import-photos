@@ -75,6 +75,10 @@ def side_effects_copy_file_with_flags(source,
                                       log_deletes_file=None,
                                       delete_on_copy_flag=False):
 
+    if logging_flag:
+        log_file_fp = open(log_file, "w")
+        log_file_fp.write(str(datetime.datetime.now()) + "\n")
+
     beginning_string = "Copying {0} to {1}... ".format(source, destination)
     if verbose_flag:
         print(beginning_string, end="")
@@ -86,7 +90,7 @@ def side_effects_copy_file_with_flags(source,
     if verbose_flag:
         print(ending_string)
     if logging_flag:
-        log_file.write(beginning_string + ending_string + "\n")
+        log_file_fp.write(beginning_string + ending_string + "\n")
 
     after_copy_hash = file_to_hash(destination)
     if before_copy_hash == after_copy_hash:
@@ -98,7 +102,8 @@ def side_effects_copy_file_with_flags(source,
         "match!".format(source, destination))
         print(hash_string)
     if logging_flag:
-        log_file.write(hash_string + "\n")
+        log_file_fp.write(hash_string + "\n")
+        log_file_fp.close()
 
 
 PICTURE_FILE_EXTENSIONS = [".jpg", ".jpeg", ".tif", ".tiff", ".cr2"]
@@ -153,14 +158,12 @@ if __name__ == "__main__":
     process_log_deletes = args.process_log_deletes
     delete_on_copy = args.delete_on_copy
     LOG_NAME = "import_pics.log"
+    log_file = os.path.join(destination, LOG_NAME)
 
     # Performing preliminary checks and preparation
     if not os.path.isdir(destination):
         print("Error: The destination needs to be a directory!")
         sys.exit(1)
-    if logging:
-        log_file = open(os.path.join(destination, LOG_NAME), "w")
-        log_file.write(str(datetime.datetime.now()) + "\n")
 
     # Actually doing the work
     for root, dirs, files in os.walk(source):
@@ -184,6 +187,23 @@ if __name__ == "__main__":
                                                   delete_on_copy_flag=delete_on_copy)
 
             elif extension.lower() in MOVIE_DATA_EXTENSIONS:
-                print("Video here! (I'll add more functionality for this later!)")
+                filename = os.path.join(root, name)
+                # Note that ctime is NOT creation time on UNIX platforms, but
+                # rather when the metadata is changed
+                ctime = os.path.getctime(filename)
+                year = datetime.datetime.fromtimestamp(ctime).year
+                month = datetime.datetime.fromtimestamp(ctime).month
+                day = datetime.datetime.fromtimestamp(ctime).day
+                date = [year, month, day]
+                generate_dirs_from_components(date, destination)
+                destination_file = os.path.join(*([destination] + 
+                                                  date + 
+                                                  [name]))
+                side_effects_copy_file_with_flags(source=filename,
+                                                  destination=destination_file,
+                                                  verbose_flag=verbose,
+                                                  logging_flag=logging,
+                                                  log_file=log_file,
+                                                  delete_on_copy_flag=delete_on_copy)
             else:
                 pass
