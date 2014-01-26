@@ -13,7 +13,18 @@ This script hashes both files to ensure that copying went well and also can
 delete photos that have already been imported and has a list of other options as
 well.
 
-To use, simply run `python import_photos.py -h` and a description will appear.
+Some examples of usage are as follows;
+
++ In the simplest case, we can simply do
+
+    import_photos.py /media/DIGITAL_CAMERA/DCIS ~/Pictures
+
+which imports all photos from one's digital camera (assuming that it's standards
+compliant and stores all its photos in a folder labeled DCIS). This includes
+hashing before and after copying and comparing hashes out of the box.
+
+For other uses, simply run `python import_photos.py -h` and a description will
+appear.
 
 Installing
 ----------

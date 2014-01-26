@@ -58,11 +58,16 @@ def get_img_date(image_fp):
     list_date = raw_date.split(" ")[0].split(":")
     return list_date
 
-def file_to_hash(filename):
+def file_to_hash(filename, chunk_size=16777216):
+    """
+    Hashes a file chunk by chunk according to chunk_size (so as to minimize
+    memory usage). Note that chunk_size should be a multiple of 128 bytes for
+    best results with MD5.
+    """
     md5 = hashlib.md5()
     with open(filename, 'rb') as fp:
         # Use multiples of 128 bytes for best results with MD5
-        for portion in iter(ft.partial(fp.read, 16777216), ''):
+        for portion in iter(ft.partial(fp.read, chunk_size), ''):
             md5.update(portion)
     return md5.digest()
 
@@ -75,6 +80,11 @@ def side_effects_copy_file_with_flags(source,
                                       log_deletes_file=None,
                                       delete_on_copy_flag=False,
                                       fast_skip_flag=False):
+    """
+    Monster function which copies all the files. This hopefully will be broken
+    up at some point, but right now acts as a common block of code for both
+    copying images and videos.
+    """
 
     if logging_flag:
         log_file_fp = open(log_file, "a")
