@@ -76,8 +76,6 @@ def side_effects_copy_file_with_flags(source,
                                       verbose_flag=False,
                                       logging_flag=False,
                                       log_file=None,
-                                      log_deletes_flag=False,
-                                      log_deletes_file=None,
                                       delete_on_copy_flag=False,
                                       fast_skip_flag=False):
     """
@@ -178,20 +176,6 @@ if __name__ == "__main__":
     argument_parser.add_argument("destination", metavar="D", type=str,
                                  help="Destination to place imported photos")
 
-    argument_parser.add_argument("-e", "--log-deletes", action="store_true",
-                                 help="Create a text file which stores all the"
-                                 " files that have been copied and can be"
-                                 " deleted later, by running this script with"
-                                 " the -p or --process-log-deletes flag.")
-
-    argument_parser.add_argument("-d", "--delete-on-copy", action="store_true",
-                                 help="Delete a file after it has been"
-                                 " successfully copied. Note deletion will"
-                                 " not occur if the hashes of the copied file"
-                                 " and the source file do not match. Therefore"
-                                 " this option is not compatible with"
-                                 " --fast-skip")
-
     argument_parser.add_argument("-p", "--process-log-deletes",
                                  action="store_true",
                                  help="Process the log of files scheduled to be"
@@ -210,8 +194,6 @@ if __name__ == "__main__":
     destination = args.destination
     verbose = args.verbose
     logging = args.log
-    log_deletes = args.log_deletes
-    process_log_deletes = args.process_log_deletes
     delete_on_copy = args.delete_on_copy
     LOG_NAME = "import_pics.log"
     log_file = os.path.join(destination, LOG_NAME)
