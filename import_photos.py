@@ -71,6 +71,12 @@ def file_to_hash(filename, chunk_size=16777216):
             md5.update(portion)
     return md5.digest()
 
+def recursive_read_img_data(source_dir):
+    """
+    Recursively create a list of all the data associated with the images.
+    """
+    return
+
 def side_effects_copy_file_with_flags(source,
                                       destination,
                                       verbose_flag=False,
