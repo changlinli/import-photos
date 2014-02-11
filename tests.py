@@ -83,6 +83,13 @@ class IntegrationTests(unittest.TestCase):
         self.assertTrue(nofile_flag)
         os.remove(new_photo_path)
 
+    def test_logging_option(self):
+        subprocess.call(["python", "import_photos.py", "-l", SAMPLE_PHOTO_FOLDER,
+                         self.destination])
+        isfile_flag = os.path.isfile(os.path.join(self.destination,
+                                                  "import_pics.log"))
+        self.assertTrue(isfile_flag)
+
     def tearDown(self):
         try:
             shutil.rmtree(os.path.join(CURRENT_FILE_DIR, "build"))
