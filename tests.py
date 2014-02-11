@@ -3,6 +3,7 @@ import import_photos
 import os
 import shutil
 import subprocess
+import sys
 
 CURRENT_FILE_DIR = os.path.dirname(os.path.realpath(__file__))
 SAMPLE_PHOTO_FOLDER = os.path.join(CURRENT_FILE_DIR, "test_data")
@@ -89,6 +90,14 @@ class IntegrationTests(unittest.TestCase):
         isfile_flag = os.path.isfile(os.path.join(self.destination,
                                                   "import_pics.log"))
         self.assertTrue(isfile_flag)
+
+    def test_verbose_option(self):
+        if not hasattr(sys.stdout, "getvalue"):
+            self.fail("Run this unit test in buffered mode!")
+        output = subprocess.check_output(["python", "import_photos.py", "-v",
+                                          SAMPLE_PHOTO_FOLDER,
+                                          self.destination])
+        self.assertTrue(output != "")
 
     def tearDown(self):
         try:
