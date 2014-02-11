@@ -184,12 +184,6 @@ if __name__ == "__main__":
     argument_parser.add_argument("destination", metavar="D", type=str,
                                  help="Destination to place imported photos")
 
-    argument_parser.add_argument("-e", "--log-deletes", action="store_true",
-                                 help="Create a text file which stores all the"
-                                 " files that have been copied and can be"
-                                 " deleted later, by running this script with"
-                                 " the -p or --process-log-deletes flag.")
-
     argument_parser.add_argument("-d", "--delete-on-copy", action="store_true",
                                  help="Delete a file after it has been"
                                  " successfully copied. Note deletion will"
@@ -197,13 +191,6 @@ if __name__ == "__main__":
                                  " and the source file do not match. Therefore"
                                  " this option is not compatible with"
                                  " --fast-skip")
-
-    argument_parser.add_argument("-p", "--process-log-deletes",
-                                 action="store_true",
-                                 help="Process the log of files scheduled to be"
-                                 " deleted created by -e or --log-deletes and go"
-                                 " through and delete all the files contained in"
-                                 " this log.")
 
     argument_parser.add_argument("-f", "--fast-skip", action="store_true",
                                  help="Skip any files that already exist in the"
@@ -216,8 +203,6 @@ if __name__ == "__main__":
     destination = args.destination
     verbose = args.verbose
     logging = args.log
-    log_deletes = args.log_deletes
-    process_log_deletes = args.process_log_deletes
     delete_on_copy = args.delete_on_copy
     LOG_NAME = "import_pics.log"
     log_file = os.path.join(destination, LOG_NAME)
