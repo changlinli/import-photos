@@ -53,8 +53,6 @@ Rename `Makefile.default` as `Makefile`. Then run
 
 . You should find an executable called `import_photos` in a new `dist` folder.
 
-Simply run (preferably within a virtualenv) `pip install -r requirements.txt`.
-
 Testing
 -------
 
