@@ -26,13 +26,34 @@ hashing before and after copying and comparing hashes out of the box.
 For other uses, simply run `python import_photos.py -h` and a description will
 appear.
 
+Dependencies
+------------
+
+In order to build this script you'll need a Python interpreter. I've only tested
+this on Python 2.7.x so I can only vouch for its accuracy on those Python
+systems.  Note that unfortunately due to the dependency on `exifread`, this is a
+Python 2 script. Ideally I'll move to Python 3 soon to keep up with the future!
+
+You'll need `pip` as well.
+
+`make` would also be nice, otherwise you can just manually execute the commands
+in `Makefile.default`.
+
+I've only tested this on Debian jessie, but it should work on any Linux system.
+It will probably work on Macs and a BSD system. It _might_ work on Windows. If
+you're on Windows, you'll need to make the usual translations from Unix-style
+commands to Windows commands in the `Makefile.default` file.
+
 Installing
 ----------
 
-Simply run (preferably within a virtualenv) `pip install -r requirements.txt`.
-Note that unfortunately due to the dependency on `exifread`, this is a Python 2
-script. Ideally I'll move to Python 3 soon to keep up with the future!
+Rename `Makefile.default` as `Makefile`. Then run
 
+    make first_install
+
+. You should find an executable called `import_photos` in a new `dist` folder.
+
+Simply run (preferably within a virtualenv) `pip install -r requirements.txt`.
 Testing
 -------
 
