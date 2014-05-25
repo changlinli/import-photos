@@ -163,7 +163,7 @@ def side_effects_copy_file_with_flags(source,
 PICTURE_FILE_EXTENSIONS = [".jpg", ".jpeg", ".tif", ".tiff", ".cr2"]
 # First element of the pair refers to the metadata file for a given movie file
 # while the second element is the actual movie file
-MOVIE_FILE_EXTENSIONS = [(".thm", ".mov"), ("", ".raw")]
+MOVIE_FILE_EXTENSIONS = [(".thm", ".mov"), ("", ".raw"), ("", ".mlv")]
 MOVIE_DATA_EXTENSIONS = [y for (x, y) in MOVIE_FILE_EXTENSIONS]
 
 if __name__ == "__main__":
