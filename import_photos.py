@@ -163,7 +163,21 @@ def side_effects_copy_file_with_flags(source,
 PICTURE_FILE_EXTENSIONS = [".jpg", ".jpeg", ".tif", ".tiff", ".cr2"]
 # First element of the pair refers to the metadata file for a given movie file
 # while the second element is the actual movie file
-MOVIE_FILE_EXTENSIONS = [(".thm", ".mov"), ("", ".raw"), ("", ".mlv")]
+# Also this is ugly I know, but Magic Lantern spits out weird file suffixes.
+# Eventually I may switch over to a regex.
+MOVIE_FILE_EXTENSIONS = [(".thm", ".mov"),
+                         ("", ".raw"),
+                         ("", ".mlv"),
+                         ("", ".m00"),
+                         ("", ".m01"),
+                         ("", ".m02"),
+                         ("", ".m03"),
+                         ("", ".m04"),
+                         ("", ".m05"),
+                         ("", ".m06"),
+                         ("", ".m07"),
+                         ("", ".m08"),
+                         ("", ".m09")]
 MOVIE_DATA_EXTENSIONS = [y for (x, y) in MOVIE_FILE_EXTENSIONS]
 
 if __name__ == "__main__":
