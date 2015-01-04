@@ -7,6 +7,7 @@ import hashlib
 import datetime
 import sys
 import functools as ft
+import logging
 
 DEFAULT_STORAGE_DIRECTORY = os.environ["HOME"]
 
@@ -80,8 +81,6 @@ def recursive_read_img_data(source_dir):
 def side_effects_copy_file_with_flags(source,
                                       destination,
                                       verbose_flag=False,
-                                      logging_flag=False,
-                                      log_file=None,
                                       log_deletes_flag=False,
                                       log_deletes_file=None,
                                       delete_on_copy_flag=False,
@@ -91,10 +90,6 @@ def side_effects_copy_file_with_flags(source,
     up at some point, but right now acts as a common block of code for both
     copying images and videos.
     """
-
-    if logging_flag:
-        log_file_fp = open(log_file, "a")
-        log_file_fp.write(str(datetime.datetime.now()) + "\n")
 
     beginning_string = "Copying {0} to {1}... ".format(source, destination)
     if verbose_flag:
@@ -107,28 +102,24 @@ def side_effects_copy_file_with_flags(source,
         if fast_skip_flag and os.path.isfile(destination):
             if verbose_flag:
                 print(skip_message)
-            if logging_flag:
-                log_file_fp.write(skip_message + "\n")
+            logging.info(skip_message)
             if delete_on_copy_flag:
                 delete_string = "Deleting {0}".format(source)
                 if verbose_flag:
                     print(delete_string)
-                if logging_flag:
-                    log_file_fp.write(delete_string + "\n")
+                logging.info(delete_string)
                 os.remove(source)
             return
         elif (file_to_hash(destination) == file_to_hash(source) and 
               not fast_skip_flag):
             if verbose_flag:
                 print(skip_message)
-            if logging_flag:
-                log_file_fp.write(skip_message + "\n")
+            logging.info(skip_message)
             if delete_on_copy_flag:
                 delete_string = "Deleting {0}".format(source)
                 if verbose_flag:
                     print(delete_string)
-                if logging_flag:
-                    log_file_fp.write(delete_string + "\n")
+                logging.info(delete_string)
                 os.remove(source)
             return
     except IOError:
@@ -138,8 +129,7 @@ def side_effects_copy_file_with_flags(source,
     ending_string = "Done!"
     if verbose_flag:
         print(ending_string)
-    if logging_flag:
-        log_file_fp.write(beginning_string + ending_string + "\n")
+    logging.info(beginning_string + ending_string)
 
     after_copy_hash = file_to_hash(destination)
     if before_copy_hash == after_copy_hash:
@@ -148,16 +138,13 @@ def side_effects_copy_file_with_flags(source,
             delete_string = "Deleting {0}".format(source)
             if verbose_flag:
                 print(delete_string)
-            if logging_flag:
-                log_file_fp.write(delete_string + "\n")
+            logging.info(delete_string)
             os.remove(source)
     else:
         hash_string = ("Warning: {0}'s and {1}'s hashes do not"
         "match!".format(source, destination))
         print(hash_string)
-    if logging_flag:
-        log_file_fp.write(hash_string + "\n")
-        log_file_fp.close()
+    logging.info(hash_string)
 
 
 PICTURE_FILE_EXTENSIONS = [".jpg", ".jpeg", ".tif", ".tiff", ".cr2"]
@@ -216,10 +203,12 @@ if __name__ == "__main__":
     source = args.source
     destination = args.destination
     verbose = args.verbose
-    logging = args.log
     delete_on_copy = args.delete_on_copy
-    LOG_NAME = "import_pics.log"
-    log_file = os.path.join(destination, LOG_NAME)
+    if args.log:
+        logging.basicConfig(filename=os.path.join(destination, "import_pics.log"),
+                            level=logging.INFO,
+                            format="%(levelname)s:%(message)s:%(asctime)s")
+        logging.info(datetime.datetime.now())
     fast_skip = args.fast_skip
 
     # Performing preliminary checks and preparation
@@ -244,8 +233,6 @@ if __name__ == "__main__":
                 side_effects_copy_file_with_flags(source=filename,
                                                   destination=destination_file,
                                                   verbose_flag=verbose,
-                                                  logging_flag=logging,
-                                                  log_file=log_file,
                                                   delete_on_copy_flag=delete_on_copy,
                                                   fast_skip_flag=fast_skip)
 
@@ -265,8 +252,6 @@ if __name__ == "__main__":
                 side_effects_copy_file_with_flags(source=filename,
                                                   destination=destination_file,
                                                   verbose_flag=verbose,
-                                                  logging_flag=logging,
-                                                  log_file=log_file,
                                                   delete_on_copy_flag=delete_on_copy,
                                                   fast_skip_flag=fast_skip)
             else:
