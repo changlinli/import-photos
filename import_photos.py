@@ -8,6 +8,7 @@ import datetime
 import sys
 import functools as ft
 import logging
+import time
 
 DEFAULT_STORAGE_DIRECTORY = os.environ["HOME"]
 
@@ -55,8 +56,17 @@ def get_img_date(image_fp):
     # This is somewhat brittle, but I always expect the date to be
     # YYYY:MM:DD hr:min:sec
     # and hence am okay with string manipulation instead of IfdTag manipulation
-    raw_date = str(tags["EXIF DateTimeDigitized"])
-    list_date = raw_date.split(" ")[0].split(":")
+    try:
+        raw_date = str(tags["EXIF DateTimeDigitized"])
+        list_date = raw_date.split(" ")[0].split(":")
+    except KeyError:
+        # If EXIF doesn't give us the date, fallback to file
+        # creation/modification time (depending on Windows vs POSIX)
+        raw_date = time.localtime(os.path.getctime(image_fp.name))
+        # For consistency add leading zeroes as necessary
+        list_date = [str(raw_date.tm_year),
+                     str(raw_date.tm_mon).zfill(2),
+                     str(raw_date.tm_mday).zfill(2)]
     return list_date
 
 def file_to_hash(filename, chunk_size=16777216):
