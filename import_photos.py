@@ -147,7 +147,7 @@ def side_effects_copy_file_with_flags(source,
     logging.info(hash_string)
 
 
-PICTURE_FILE_EXTENSIONS = [".jpg", ".jpeg", ".tif", ".tiff", ".cr2"]
+PICTURE_FILE_EXTENSIONS = [".jpg", ".jpeg", ".tif", ".tiff", ".cr2", ".raf"]
 # First element of the pair refers to the metadata file for a given movie file
 # while the second element is the actual movie file
 # Also this is ugly I know, but Magic Lantern spits out weird file suffixes.
