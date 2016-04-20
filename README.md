@@ -58,3 +58,6 @@ Testing
 
 To run the tests both in the docstrings and in the `tests.py` file, simply run
 `nosetests --with-doctest`.
+
+Occasionally the first run of the tests will fail, but subsequent runs will
+succeed. I have not spent the time to track down why this is the case.
